@@ -51,11 +51,11 @@ func (r *Repository) GetUsers(context *fiber.Ctx) error{
 
 	if err != nil {
 		context.Status(http.StatusInternalServerError).JSON(
-			&fiber.Map{"message":"Could not get books"})
+			&fiber.Map{"message":"Could not get users"})
 		return err	
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Book created successfully",
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"User created successfully",
 	"data":Users})
 	return nil
 }
@@ -137,7 +137,7 @@ func main(){
 
 	err = models.MigrateUsers(db)
 	if err != nil {
-		log.Fatal("Error migrating books",err)
+		log.Fatal("Error migrating Users",err)
 	}
 	r:= Repository{
 		DB: db,
