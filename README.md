@@ -26,7 +26,10 @@ To run this project locally, ensure you have Go and PostgreSQL installed on your
    copy paste the .env.example to .env file and change the details.
     ```bash
    cp .env.example .env
+3. **Install Dependencies**
+   ```bash
+   go mod tidy
 
-3. **Run the File**
+4. **Run the File**
     ```bash
    go run main.go
