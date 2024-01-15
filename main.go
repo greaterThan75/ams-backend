@@ -55,7 +55,7 @@ func (r *Repository) GetUsers(context *fiber.Ctx) error{
 		return err	
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"User created successfully",
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Got users successfully",
 	"data":Users})
 	return nil
 }
