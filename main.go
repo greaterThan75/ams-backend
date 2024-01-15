@@ -17,37 +17,37 @@ type Repository struct{
 	DB *gorm.DB
 }
 
-type Book struct{
-	Author string `json:"author"`
-	Title string `json:"title"`
-	Publisher string `json:"publisher"` 
+type User struct{
+	Name string `json:"name"`
+	Email string `json:"email"`
+	Password string `json:"password"` 
 }
 
-func (r *Repository) CreateBook(context *fiber.Ctx) error{
-	book := new(Book)
-	err:= context.BodyParser(&book)
+func (r *Repository) CreateUser(context *fiber.Ctx) error{
+	user := new(User)
+	err:= context.BodyParser(&user)
 	if err != nil {
 		context.Status(http.StatusUnprocessableEntity).JSON(
 			&fiber.Map{"message":"request failed"})
 		return err
 	}
 
-	err = r.DB.Create(&book).Error
+	err = r.DB.Create(&user).Error
 	if err != nil {
 		context.Status(http.StatusInternalServerError).JSON(
-			&fiber.Map{"message":"Could not create book"})
+			&fiber.Map{"message":"Could not an user account"})
 		return err	
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Book created successfully"})
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"user account created successfully"})
 	return nil
 
 }
 
-func (r *Repository) GetBooks(context *fiber.Ctx) error{
-	bookModels := &[]models.Book{}
+func (r *Repository) GetUsers(context *fiber.Ctx) error{
+	Users := &[]models.User{}
 
-	err := r.DB.Find(bookModels).Error
+	err := r.DB.Find(Users).Error
 
 	if err != nil {
 		context.Status(http.StatusInternalServerError).JSON(
@@ -56,12 +56,13 @@ func (r *Repository) GetBooks(context *fiber.Ctx) error{
 	}
 
 	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Book created successfully",
-	"data":bookModels})
+	"data":Users})
 	return nil
 }
 
-func (r *Repository) DeleteBook(context*fiber.Ctx) error {
-	bookModel:= models.Book{}
+func (r *Repository) DeleteUser(context*fiber.Ctx) error {
+	Users := &[]models.User{}
+
 	id := context.Params("id")
 	if id == "" {
 		context.Status(http.StatusInternalServerError).JSON(
@@ -70,22 +71,22 @@ func (r *Repository) DeleteBook(context*fiber.Ctx) error {
 		return nil
 	}
 
-	err := r.DB.Delete(bookModel,id)
+	err := r.DB.Delete(Users,id)
 
 	if err.Error != nil {
 		context.Status(http.StatusInternalServerError).JSON(
-			&fiber.Map{"message":"Could not delete book"})
+			&fiber.Map{"message":"Could not delete user"})
 		return err.Error	
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Book deleted successfully"})
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"user deleted successfully"})
 	return nil
 }
 
-func (r *Repository) GetBookById(context *fiber.Ctx) error {
+func (r *Repository) GetUserById(context *fiber.Ctx) error {
+	Users := &[]models.User{}
 
 	id := context.Params("id")
-	bookModel := &models.Book{}
 	if id == "" {
 		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message": "Invalid id"},
@@ -93,24 +94,24 @@ func (r *Repository) GetBookById(context *fiber.Ctx) error {
 		return nil
 	}
 	fmt.Println("the ID is ", id)
-	err := r.DB.Where("id = ?", id).Find(bookModel).Error
+	err := r.DB.Where("id = ?", id).Find(Users).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "Could not get book"})
+			&fiber.Map{"message": "Could not get User"})
 		return err
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"Book retrieved successfully","data":bookModel})
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message":"User retrieved successfully","data":Users})
 	return nil
 
 }
 
 func(r *Repository) SetupRoutes(app *fiber.App){
-	api:= app.Group("/api")
-	api.Post("/create_books",r.CreateBook)
-	api.Delete("/delete_book/:id",r.DeleteBook)
-	api.Get("/get_books/:id",r.GetBookById)
-	api.Get("/books",r.GetBooks)
+	api:= app.Group("/api/users")
+	api.Post("/create",r.CreateUser)
+	api.Delete("/delete/:id",r.DeleteUser)
+	api.Get("/:id",r.GetUserById)
+	api.Get("/",r.GetUsers)
 
 
 }
@@ -134,7 +135,7 @@ func main(){
 		log.Fatal("Error connecting to database",err)
 	}
 
-	err = models.MigrateBooks(db)
+	err = models.MigrateUsers(db)
 	if err != nil {
 		log.Fatal("Error migrating books",err)
 	}

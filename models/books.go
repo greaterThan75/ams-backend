@@ -2,16 +2,15 @@ package models
 
 import "gorm.io/gorm"
 
-type Book struct{
+type User struct{
 	ID uint `gorm:"primary_key;autoIncrement" json:"id"`
-	Author *string `json:"author"`
-	Title *string `json:"title"`
-	Publisher *string `json:"publisher"`
+	Name *string `json:"name"`
+	Email *string `json:"email"`
+	Password *string `json:"password"`
 }
 
 
-func MigrateBooks(db *gorm.DB) error{
-	err:= db.AutoMigrate(&Book{})
+func MigrateUsers(db *gorm.DB) error{
+	err:= db.AutoMigrate(&User{})
 	return err
-
 }
